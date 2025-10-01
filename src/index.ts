@@ -1,3 +1,4 @@
+import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -13,11 +14,13 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 app.use(cors());
 app.use(morgan("combined"));
+app.use(bodyParser.json()); 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // routes
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.status(200).json({ message: "Welcome to the API" });
 })
 
 app.listen(PORT, () => {
