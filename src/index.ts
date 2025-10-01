@@ -6,7 +6,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import errorHandler from "./middlewares/errorHandler";
-import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
 
 // Load environment variables
 dotenv.config();
@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Routes
-app.use("/auth", authRoutes);
+app.use("/", userRoutes);
 
 // Error handler
 app.use(errorHandler);

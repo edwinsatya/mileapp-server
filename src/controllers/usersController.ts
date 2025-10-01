@@ -2,8 +2,19 @@ import { NextFunction, Request, Response } from "express";
 import { userSchema } from "../schemas/userSchema";
 import { checkUserCredentials } from "../services/users";
 
-export const loginController = (req: Request, res: Response, next: NextFunction) => {
-  try {
+class UserController {
+  static register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, password } = userSchema.parse(req.body)
+    
+      res.status(201).json({ message: "User registered successfully", user: { email } })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static login(req: Request, res: Response, next: NextFunction) {
+    try {
     const { email, password } = userSchema.parse(req.body)
     // Dummy authentication logic
     const isValid = checkUserCredentials(email, password)
@@ -13,4 +24,7 @@ export const loginController = (req: Request, res: Response, next: NextFunction)
   } catch (err) {
     next(err)
   }
+  }
 }
+
+export default UserController
