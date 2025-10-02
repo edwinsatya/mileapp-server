@@ -13,7 +13,7 @@ class UserController {
       const hashedPassword = hashPassword(password)
       const user = await createUser({ name, email, password: hashedPassword })
       const payload = { id: user.id, email: user.email, name: user.name }
-      const token = jwt.sign(payload, process.env.jwt_SECRET as string)
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string)
     
       res.status(201).json({ message: "User registered successfully", user: { email, name }, token })
     } catch (err) {
@@ -28,7 +28,7 @@ class UserController {
       if (!findUser.length) { throw { status: 404, message: 'Invalid Email or Password' } }
       if(!comparePassword(password, findUser[0].password)) { throw { status: 404, message: 'Invalid Email or Password' } }
       const payload = { id: findUser[0].id, email: findUser[0].email, name: findUser[0].name }
-      const token = jwt.sign(payload, process.env.jwt_SECRET as string)
+      const token = jwt.sign(payload, process.env.JWT_SECRET as string)
     
       res.status(200).json({ message: "Login successfully", user: { email, name: payload.name }, token })
     } catch (err) {
