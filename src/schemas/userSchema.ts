@@ -5,3 +5,5 @@ export const userSchema = z.object({
   email: z.email(),
   password: z.string().min(6),
 })
+
+export const loginSchema = userSchema.pick({ email: true, password: true })
