@@ -16,6 +16,7 @@ export const createUser = async ({ name, email, password }: User): Promise<UserR
 
 export const getUsers = async (id?: string, email?: string): Promise<UserResponse[]> => {
   const mockApiUrl = process.env.MOCK_API_URL
+  console.log(mockApiUrl, '<<<<<')
   const url = id ? `${mockApiUrl}/users/${id}` : `${mockApiUrl}/users`
   try {
     const response = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
