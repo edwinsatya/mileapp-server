@@ -4,6 +4,7 @@ import UserController from '../controllers/usersController';
 const router = Router();
 router.post('/register', UserController.register)
 router.post('/login', UserController.login)
+router.post('/logout', UserController.logout)
 router.get('/users', UserController.getUsers)
 router.get('/users/:id', UserController.getUsers)
 

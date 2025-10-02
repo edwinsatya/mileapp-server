@@ -11,11 +11,9 @@ class UserController {
       const findUser = await getUsers(undefined, email)
       if (findUser.length) { throw { status: 409, message: 'Email already registered' } }
       const hashedPassword = hashPassword(password)
-      const user = await createUser({ name, email, password: hashedPassword })
-      const payload = { id: user.id, email: user.email, name: user.name }
-      const token = jwt.sign(payload, process.env.JWT_SECRET as string)
+      await createUser({ name, email, password: hashedPassword })
     
-      res.status(201).json({ message: "User registered successfully", user: { email, name }, token })
+      res.status(201).json({ message: "User registered successfully", user: { email, name } })
     } catch (err) {
       next(err)
     }
@@ -29,11 +27,24 @@ class UserController {
       if(!comparePassword(password, findUser[0].password)) { throw { status: 404, message: 'Invalid Email or Password' } }
       const payload = { id: findUser[0].id, email: findUser[0].email, name: findUser[0].name }
       const token = jwt.sign(payload, process.env.JWT_SECRET as string)
+
+      // set cookie
+      res.cookie('token', token, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24 // 1 day
+      })
     
       res.status(200).json({ message: "Login successfully", user: { email, name: payload.name }, token })
     } catch (err) {
       next(err)
     }
+  }
+
+  static async logout(req: Request, res: Response) {
+    res.clearCookie('token', { httpOnly: false, sameSite: 'lax' })
+    res.status(200).json({ message: 'Logged out successfully' })
   }
 
   static async getUsers(req: Request, res: Response, next: NextFunction) {
