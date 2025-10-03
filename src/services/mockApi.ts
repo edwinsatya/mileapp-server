@@ -1,3 +1,4 @@
+import { Task, TaskResponse } from "../types/task";
 import { User, UserResponse } from "../types/users";
 
 export const createUser = async ({ name, email, password }: User): Promise<UserResponse> => {
@@ -26,5 +27,19 @@ export const getUsers = async (id?: string, email?: string): Promise<UserRespons
     return data
   } catch (err) {
     throw err
+  }
+}
+
+export const createTask = async (task: Task): Promise<TaskResponse> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  try {
+    const response = await fetch(`${mockApiUrl}/tasks`, {  
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify(task) 
+    })
+    return response.json()
+  } catch (err) {
+    throw err 
   }
 }

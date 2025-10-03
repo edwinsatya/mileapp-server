@@ -29,11 +29,12 @@ class UserController {
       const token = jwt.sign(payload, process.env.JWT_SECRET as string)
 
       // set cookie
+      const isProd = process.env.NODE_ENV === 'production'
       res.cookie('token', token, {
         httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'none',
-        domain:  process.env.NODE_ENV === 'production' ? '.touchsimpledev.com' : undefined,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        domain: isProd ? '.touchsimpledev.com' : undefined,
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       })
     
@@ -44,11 +45,12 @@ class UserController {
   }
 
   static async logout(req: Request, res: Response) {
+    const isProd = process.env.NODE_ENV === 'production'
     res.clearCookie('token', {
       httpOnly: false,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'none',
-      domain: process.env.NODE_ENV === 'production' ? '.touchsimpledev.com' : undefined,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      domain: isProd ? '.touchsimpledev.com' : undefined,
       path: '/'
     })
     res.status(200).json({ message: 'Logged out successfully' })

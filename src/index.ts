@@ -6,6 +6,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import errorHandler from "./middlewares/errorHandler";
+import taskRoutes from "./routes/tasks";
 import userRoutes from "./routes/users";
 
 // Load environment variables
@@ -27,6 +28,7 @@ app.use(express.json());
 
 // Routes
 app.use("/", userRoutes);
+app.use("/tasks", taskRoutes)
 
 // Error handler
 app.use(errorHandler);
