@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest } from "../middlewares/auth";
 import { loginSchema, userSchema } from "../schemas/userSchema";
 import { comparePassword, hashPassword } from "../services/bcrypt";
 import { createUser, getUsers } from "../services/mockApi";
@@ -61,6 +62,15 @@ class UserController {
       const { id } = req.params
       const users = await getUsers(id)
       res.status(200).json(users)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async getUserByToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const user = req.decoded
+      res.status(200).json({ user})
     } catch (err) {
       next(err)
     }
