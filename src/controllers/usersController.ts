@@ -44,7 +44,13 @@ class UserController {
   }
 
   static async logout(req: Request, res: Response) {
-    res.clearCookie('token', { httpOnly: false, sameSite: 'lax' })
+    res.clearCookie('token', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      domain: process.env.NODE_ENV === 'production' ? '.touchsimpledev.com' : undefined,
+      path: '/'
+    })
     res.status(200).json({ message: 'Logged out successfully' })
   }
 
