@@ -43,3 +43,70 @@ export const createTask = async (task: Task): Promise<TaskResponse> => {
     throw err 
   }
 }
+
+interface GetTaskParams {
+  filter?: Record<string, string>
+  page?: number
+  limit?: number
+  sortBy?: keyof TaskResponse   
+  sortOrder?: 'asc' | 'desc' 
+}
+
+export const getTasks = async ({ filter = {}, page = 1, limit = 10, sortBy, sortOrder }: GetTaskParams): Promise<TaskResponse[]> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  const url = new URL(`${mockApiUrl}/tasks`);
+  if (filter) {
+    Object.entries(filter).forEach(([key, value]) => {
+      if (value) url.searchParams.append(key, value)
+    })
+  }
+
+  url.searchParams.append('page', page.toString())
+  url.searchParams.append('limit', limit.toString())
+  try {
+    const response = await fetch(url.toString(), {
+      method: 'GET', 
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+    let tasks: TaskResponse[] = await response.json()
+
+    if (sortBy) {
+      tasks.sort((a, b) => {
+        const aValue = a[sortBy] ?? null
+        const bValue = b[sortBy] ?? null
+
+        if (aValue === bValue) return 0
+
+        if (aValue === null) return 1
+        if (bValue === null) return -1
+
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sortOrder === 'asc' ? aValue - bValue : bValue - aValue
+        }
+
+        const aStr = String(aValue)
+        const bStr = String(bValue)
+        if (sortOrder === 'asc') return aStr.localeCompare(bStr)
+        return bStr.localeCompare(aStr)
+      })
+    }
+
+    return tasks
+  } catch (err) {
+    throw err
+  }
+}
+
+export async function getTotalTask(): Promise<number> {
+  const mockApiUrl = process.env.MOCK_API_URL
+  const url = new URL(`${mockApiUrl}/tasks`);
+
+  const response = await fetch(url.toString(), {
+    method: 'GET', 
+    headers: { 'Content-Type': 'application/json' }
+  })
+
+  const data = await response.json()
+  return data.length
+}

@@ -5,5 +5,6 @@ import { authentication } from '../middlewares/auth'
 const router = Router()
 router.use(authentication)
 router.post('/', TaskController.create)
+router.get('/', TaskController.getTasks)
 
 export default router
