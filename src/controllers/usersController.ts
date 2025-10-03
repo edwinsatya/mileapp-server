@@ -32,7 +32,8 @@ class UserController {
       res.cookie('token', token, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: 'none',
+        domain:  process.env.NODE_ENV === 'production' ? '.touchsimpledev.com' : undefined,
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       })
     
