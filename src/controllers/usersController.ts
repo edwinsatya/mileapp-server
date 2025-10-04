@@ -14,7 +14,7 @@ class UserController {
       const hashedPassword = hashPassword(password)
       await createUser({ name, email, password: hashedPassword })
     
-      res.status(201).json({ message: "User registered successfully", user: { email, name } })
+      res.status(201).json({ message: "Registration successfully", user: { email, name } })
     } catch (err) {
       next(err)
     }
@@ -39,7 +39,7 @@ class UserController {
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       })
     
-      res.status(200).json({ message: "Login successfully", user: { email, name: payload.name }, token })
+      res.status(200).json({ message: "Logged in successfully", user: { email, name: payload.name }, token })
     } catch (err) {
       next(err)
     }
