@@ -15,20 +15,6 @@ export const createUser = async ({ name, email, password }: User): Promise<UserR
   }
 }
 
-export const getUsers = async (id?: string): Promise<UserResponse[]> => {
-  const mockApiUrl = process.env.MOCK_API_URL
-  const url = id ? `${mockApiUrl}/users/${id}` : `${mockApiUrl}/users`
-  try {
-    const response = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
-    const data = await response.json()
-    if (data[0]?.length === 1) { throw { status: 404, message: 'User Not Found' } }
-    if (id) { return [data] }
-    return data
-  } catch (err) {
-    throw err
-  }
-}
-
 export const getUserByEmail = async (email: string): Promise<UserResponse[]> => {
   const mockApiUrl = process.env.MOCK_API_URL
   const url = `${mockApiUrl}/users?email=${email}`
@@ -63,6 +49,18 @@ export const updateTask = async (id: number, task: Task): Promise<TaskResponse> 
       method: 'PUT', 
       headers: { 'Content-Type': 'application/json' }, 
       body: JSON.stringify(task) 
+    })
+    return response.json()
+  } catch (err) {
+    throw err 
+  }
+}
+
+export const deleteTask = async (taskId: number, userId: number): Promise<TaskResponse> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  try {
+    const response = await fetch(`${mockApiUrl}/users/${userId}/tasks/${taskId}`, {  
+      method: 'DELETE'
     })
     return response.json()
   } catch (err) {

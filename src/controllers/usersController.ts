@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { loginSchema, userSchema } from "../schemas/userSchema";
 import { comparePassword, hashPassword } from "../services/bcrypt";
-import { createUser, getUserByEmail, getUsers } from "../services/mockApi";
+import { createUser, getUserByEmail } from "../services/mockApi";
 
 class UserController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -55,16 +55,6 @@ class UserController {
       path: '/'
     })
     res.status(200).json({ message: 'Logged out successfully' })
-  }
-
-  static async getUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params
-      const users = await getUsers(id)
-      res.status(200).json(users)
-    } catch (err) {
-      next(err)
-    }
   }
 
   static async getUserByToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {

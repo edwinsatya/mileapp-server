@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { taskSchema } from "../schemas/taskSchema";
-import { createTask, getTask, getTasks, getTotalTask, getUserByEmail, updateTask } from "../services/mockApi";
+import { createTask, deleteTask, getTask, getTasks, getTotalTask, getUserByEmail, updateTask } from "../services/mockApi";
 import { TaskResponse } from "../types/task";
 
 class TaskController {
@@ -74,6 +74,18 @@ class TaskController {
       const updatedTask = await updateTask(taskId, { ...task, userId, author, dueDate })
 
       res.status(200).json({ message: "Task updated", task: updatedTask })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async remove(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const taskId = Number(req.params.id)
+      const userId = Number(req.decoded!.id)
+      const deletedTask = await deleteTask(taskId, userId)
+
+      res.status(200).json({ message: "Task deleted", task: deletedTask })
     } catch (err) {
       next(err)
     }

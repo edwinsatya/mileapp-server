@@ -8,5 +8,6 @@ router.post('/', TaskController.create)
 router.get('/', TaskController.getTasks)
 router.get('/:id', authorization, TaskController.getTask)
 router.put('/:id', authorization, TaskController.update)
+router.delete('/:id', authorization, TaskController.remove)
 
 export default router

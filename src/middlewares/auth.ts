@@ -23,10 +23,11 @@ export function authentication(req: AuthenticatedRequest, res: Response, next: N
 
 export async function authorization(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    const currentUserId = req?.decoded?.id
+    const currentUserId = req.decoded!.id
     const taskId = Number(req.params.id)
     const task = await getTask(taskId)
-    if (currentUserId == task.userId) {
+    if (!task) { throw { status: 404, message: 'Task Not Found' } }
+    if (Number(currentUserId) === Number(task.userId)) {
       next();
     } else {
       throw {
