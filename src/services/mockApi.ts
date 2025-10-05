@@ -15,7 +15,7 @@ export const createUser = async ({ name, email, password }: User): Promise<UserR
   }
 }
 
-export const getUsers = async (id?: string, email?: string): Promise<UserResponse[]> => {
+export const getUsers = async (id?: string): Promise<UserResponse[]> => {
   const mockApiUrl = process.env.MOCK_API_URL
   const url = id ? `${mockApiUrl}/users/${id}` : `${mockApiUrl}/users`
   try {
@@ -23,7 +23,19 @@ export const getUsers = async (id?: string, email?: string): Promise<UserRespons
     const data = await response.json()
     if (data[0]?.length === 1) { throw { status: 404, message: 'User Not Found' } }
     if (id) { return [data] }
-    if (email) { return data.filter((user: UserResponse) => user.email === email) }
+    return data
+  } catch (err) {
+    throw err
+  }
+}
+
+export const getUserByEmail = async (email: string): Promise<UserResponse[]> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  const url = `${mockApiUrl}/users?email=${email}`
+   try {
+    const response = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' } })
+    const data = await response.json()
+    if (typeof data === 'string') { return [] }
     return data
   } catch (err) {
     throw err
@@ -44,12 +56,41 @@ export const createTask = async (task: Task): Promise<TaskResponse> => {
   }
 }
 
+export const updateTask = async (id: number, task: Task): Promise<TaskResponse> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  try {
+    const response = await fetch(`${mockApiUrl}/tasks/${id}`, {  
+      method: 'PUT', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify(task) 
+    })
+    return response.json()
+  } catch (err) {
+    throw err 
+  }
+}
+
 interface GetTaskParams {
   filter?: Record<string, string>
   page?: number
   limit?: number
   sortBy?: keyof TaskResponse   
   sortOrder?: 'asc' | 'desc' 
+}
+
+export const getTask = async (id: number): Promise<TaskResponse> => {
+  const mockApiUrl = process.env.MOCK_API_URL
+  const url = new URL(`${mockApiUrl}/tasks/${id}`)
+  try {
+    const response = await fetch(url.toString(), {
+      method: 'GET', 
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+    return response.json()
+  } catch (err) {
+    throw err
+  }
 }
 
 export const getTasks = async ({ filter = {}, page = 1, limit = 10, sortBy, sortOrder }: GetTaskParams): Promise<TaskResponse[]> => {

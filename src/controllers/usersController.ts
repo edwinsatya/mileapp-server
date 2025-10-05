@@ -3,13 +3,13 @@ import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { loginSchema, userSchema } from "../schemas/userSchema";
 import { comparePassword, hashPassword } from "../services/bcrypt";
-import { createUser, getUsers } from "../services/mockApi";
+import { createUser, getUserByEmail, getUsers } from "../services/mockApi";
 
 class UserController {
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
       const { name, email, password } = userSchema.parse(req.body)
-      const findUser = await getUsers(undefined, email)
+      const findUser = await getUserByEmail(email)
       if (findUser.length) { throw { status: 409, message: 'Email already registered' } }
       const hashedPassword = hashPassword(password)
       await createUser({ name, email, password: hashedPassword })
@@ -23,7 +23,7 @@ class UserController {
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { email, password } = loginSchema.parse(req.body)
-      const findUser = await getUsers(undefined, email)
+      const findUser = await getUserByEmail(email)
       if (!findUser.length) { throw { status: 404, message: 'Invalid Email or Password' } }
       if(!comparePassword(password, findUser[0].password)) { throw { status: 404, message: 'Invalid Email or Password' } }
       const payload = { id: findUser[0].id, email: findUser[0].email, name: findUser[0].name }

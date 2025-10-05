@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
+import { getTask } from "../services/mockApi";
 
 export interface AuthenticatedRequest extends Request {
   decoded?: {  id: string, email: string, name: string}
@@ -20,9 +21,12 @@ export function authentication(req: AuthenticatedRequest, res: Response, next: N
   }
 }
 
-export function authorization(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function authorization(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   try {
-    if (req?.decoded?.id == req.params.id) {
+    const currentUserId = req?.decoded?.id
+    const taskId = Number(req.params.id)
+    const task = await getTask(taskId)
+    if (currentUserId == task.userId) {
       next();
     } else {
       throw {

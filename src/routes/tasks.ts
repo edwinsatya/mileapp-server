@@ -1,10 +1,12 @@
 import { Router } from 'express'
 import TaskController from '../controllers/tasksController'
-import { authentication } from '../middlewares/auth'
+import { authentication, authorization } from '../middlewares/auth'
 
 const router = Router()
 router.use(authentication)
 router.post('/', TaskController.create)
 router.get('/', TaskController.getTasks)
+router.get('/:id', authorization, TaskController.getTask)
+router.put('/:id', authorization, TaskController.update)
 
 export default router

@@ -1,24 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { taskSchema } from "../schemas/taskSchema";
-import { createTask, getTasks, getTotalTask } from "../services/mockApi";
+import { createTask, getTask, getTasks, getTotalTask, getUserByEmail, updateTask } from "../services/mockApi";
 import { TaskResponse } from "../types/task";
 
 class TaskController {
-  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    try {
-      const task = taskSchema.parse(req.body)
-      const userId = req.decoded!.id
-      const author = req.decoded!.name
-      const dueDate =  new Date(task.dueDate).toISOString()
-      const newTask = await createTask({ ...task, userId, author, dueDate })
-    
-      res.status(201).json({ message: "New task created", task: newTask })
-    } catch (err) {
-      next(err)
-    }
-  }
-
   static async getTasks(req: Request, res: Response, next: NextFunction) {
     try {
       const { page, limit, sortBy, sortOrder, ...queryFilters } = req.query
@@ -47,6 +33,47 @@ class TaskController {
       }
 
       res.status(200).json({ tasks, meta })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async getTask(req: Request, res: Response, next: NextFunction) {
+    try {
+      const taskId = Number(req.params.id)
+      const task = await getTask(taskId)
+      res.status(200).json({ task })
+    } catch (error) {
+      next()
+    }
+  }
+
+  static async create(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const task = taskSchema.parse(req.body)
+      const findUser = await getUserByEmail(req.decoded!.email)
+      if (!findUser.length) { throw { status: 404, message: 'User Not Found' } }
+      const userId = req.decoded!.id
+      const author = req.decoded!.name
+      const dueDate =  new Date(task.dueDate).toISOString()
+      const newTask = await createTask({ ...task, userId, author, dueDate })
+    
+      res.status(201).json({ message: "New task created", task: newTask })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  static async update(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const task = taskSchema.parse(req.body)
+      const taskId = Number(req.params.id)
+      const userId = req.decoded!.id
+      const author = req.decoded!.name
+      const dueDate =  new Date(task.dueDate).toISOString()
+      const updatedTask = await updateTask(taskId, { ...task, userId, author, dueDate })
+
+      res.status(200).json({ message: "Task updated", task: updatedTask })
     } catch (err) {
       next(err)
     }
