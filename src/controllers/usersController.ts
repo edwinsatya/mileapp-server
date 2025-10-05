@@ -39,7 +39,7 @@ class UserController {
         maxAge: 1000 * 60 * 60 * 24 // 1 day
       })
     
-      res.status(200).json({ message: "Logged in successfully", user: { email, name: payload.name }, token })
+      res.status(200).json({ message: "Logged in successfully", user: { id: findUser[0].id, email, name: payload.name }, token })
     } catch (err) {
       next(err)
     }

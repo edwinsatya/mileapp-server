@@ -9,7 +9,9 @@ class TaskController {
     try {
       const task = taskSchema.parse(req.body)
       const userId = req.decoded!.id
-      const newTask = await createTask({ userId, ...task })
+      const author = req.decoded!.name
+      const dueDate =  new Date(task.dueDate).toISOString()
+      const newTask = await createTask({ ...task, userId, author, dueDate })
     
       res.status(201).json({ message: "New task created", task: newTask })
     } catch (err) {
