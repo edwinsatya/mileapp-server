@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { taskSchema } from "../schemas/taskSchema";
-import { createTask, deleteTask, getTask, getTasks, getTotalTask, getUserByEmail, updateTask } from "../services/mockApi";
+import { createTask, deleteTask, getTask, getTasks, getUserByEmail, updateTask } from "../services/mockApi";
 import { TaskResponse } from "../types/task";
 
 class TaskController {
@@ -15,21 +15,25 @@ class TaskController {
         if (value) filters[key] = String(value)
       })
 
-      const totalTasks = await getTotalTask()
-
-      const tasks: TaskResponse[] = await getTasks({
+      const allFilteredTasks: TaskResponse[] = await getTasks({
         filter: filters,
-        page: pageNum,
-        limit: limitNum,
+        page: 1,
+        limit: Number.MAX_SAFE_INTEGER,
         sortBy: sortBy as keyof TaskResponse,
         sortOrder: sortOrder as 'asc' | 'desc'
       })
 
+      const totalFilteredTasks = allFilteredTasks.length
+      const tasks: TaskResponse[] = allFilteredTasks.slice(
+        (pageNum - 1) * limitNum,
+        pageNum * limitNum
+      )
+
       const meta = {
         page: pageNum,
         limit: limitNum,
-        total: tasks.length,
-        totalPages: Math.ceil(totalTasks / limitNum)
+        total: totalFilteredTasks,
+        totalPages: Math.ceil(totalFilteredTasks / limitNum)
       }
 
       res.status(200).json({ tasks, meta })
