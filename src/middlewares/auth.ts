@@ -26,7 +26,7 @@ export async function authorization(req: AuthenticatedRequest, res: Response, ne
     const currentUserId = req.decoded!.id
     const taskId = Number(req.params.id)
     const task = await getTask(taskId)
-    if (!task) { throw { status: 404, message: 'Task Not Found' } }
+    if (!task || typeof task === 'string') { throw { status: 404, message: 'Task Not Found' } }
     if (Number(currentUserId) === Number(task.userId)) {
       next();
     } else {
