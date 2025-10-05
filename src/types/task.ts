@@ -1,9 +1,10 @@
 export type Task = {
   title: string
   description: string
-  status?: string
+  status?: number
   author: string
   goal: string
+  dueDate: string
   userId: string
 };
 

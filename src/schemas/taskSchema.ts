@@ -4,7 +4,8 @@ export const taskSchema = z.object({
   createdAt: z.string().optional(),
   title: z.string(),
   description: z.string(),
-  status: z.string().optional().default('pending'),
+  status: z.number().optional().default(1),
   author: z.string(),
   goal: z.string(),
+  dueDate: z.string()
 })
